@@ -3,8 +3,8 @@ name: Hola Mundo
 on:
   workflow_dispatch:
     inputs:
-      mi-valor:
-        description: 'Ingresa un valor'
+      tag:
+        description: 'Ingresa el valor del tag'
         required: true
 
 jobs:
