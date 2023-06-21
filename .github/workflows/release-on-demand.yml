@@ -1,16 +1,25 @@
-name: Hola Mundo
+name: Verificar Tag
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Ingresa el valor del tag'
+        description: 'Nombre del tag'
+        required: true
+      repositorio:
+        description: 'Nombre del repositorio (en formato "usuario/repositorio")'
         required: true
 
 jobs:
-  hola-mundo:
+  verificar-tag:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Imprimir Valor
-        run: echo "El valor ingresado es ${{ github.event.inputs.mi-valor }}"
+      - name: Verificar Tag
+        id: verificar-tag
+        run: |
+          tag_exists=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/${{ github.event.inputs.tag }}")
+          echo "::set-output name=tag_exists::${tag_exists}"
+          
+      - name: Imprimir Resultado
+        run: echo "El tag ${{ github.event.inputs.tag }} en el repositorio ${{ github.event.inputs.repositorio }} ${{ steps.verificar-tag.outputs.tag_exists }}"
