@@ -1,0 +1,16 @@
+name: Hola Mundo
+
+on:
+  workflow_dispatch:
+    inputs:
+      mi-valor:
+        description: 'Ingresa un valor'
+        required: true
+
+jobs:
+  hola-mundo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Imprimir Valor
+        run: echo "El valor ingresado es ${{ github.event.inputs.mi-valor }}"
