@@ -36,10 +36,10 @@ jobs:
             echo "::set-output name=tag_exists::false"
           fi
 
-      - name: Imprimir Resultado
-        run: |
-          if [[ "${{ steps.verificar-tag.outputs.tag_exists }}" == "true" ]]; then
-            echo "El tag ${{ github.event.inputs.tag }} existe en el repositorio ${{ github.event.inputs.repositorio }}"
-          else
-            echo "El tag ${{ github.event.inputs.tag }} NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
-          fi
+    - name: Imprimir Resultado
+      run: |
+        if [[ "${{ steps.verificar-tag.outputs.tag_exists }}" == "true" ]]; then
+          echo "El tag ${{ github.event.inputs.tag }} existe en el repositorio ${{ github.event.inputs.repositorio }}"
+        else
+          echo "El tag ${{ github.event.inputs.tag }} NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
+        fi
