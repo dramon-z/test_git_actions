@@ -74,9 +74,10 @@ jobs:
           TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
         # if: needs.job1.outputs.TAG_EXISTS == 'true'
         run: |
-          tag=${{ needs.job1.outputs.TAG_TO_CHECK }}      
+          tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
+          tag_exists=${{ needs.job1.outputs.TAG_EXISTS }}    
           echo "TAG: $tag"
-          echo "TAG_TO_CHECK: $TAG_TO_CHECK"
+          echo "tag_exists: $tag_exists"
           echo "service: ${{ secrets.registry.service.name }}"
           
           docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
