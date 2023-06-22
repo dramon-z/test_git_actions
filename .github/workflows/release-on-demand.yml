@@ -13,7 +13,9 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
-
+    outputs:
+      TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+      TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
     steps:
       - name: Configurar autenticación
         uses: actions/checkout@v2
