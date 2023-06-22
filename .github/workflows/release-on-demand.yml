@@ -59,16 +59,23 @@ jobs:
           else
             echo "El tag $tag_to_check NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
           fi
-  # job2:
-  #   needs: job1
-  #   runs-on: ubuntu-latest
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Docker Tag
-  #       id: docker-tag
-  #       if: needs.verificar-tag.outputs.TAG_EXISTS == 'true'
-  #       run: |
-  #         docker tag ${{ secrets.registry.service.name }}:${{ inputs.versionPROD }}-RC ${{ secrets.registry.service.name }}:${{ inputs.versionPROD }}
+    steps:
+      - name: Docker Tag
+        id: docker-tag
+        if: needs.verificar-tag.outputs.TAG_EXISTS == 'true'
+        run: |
+          tag_to_check=${{ github.event.inputs.tag }}
+          if [[ -z "$tag_to_check" ]]; then
+            tag_to_check=$LATEST_TAG
+          fi
+          echo "TAG: $tag_to_check"
+          echo "service: ${{ secrets.registry.service.name }}"
+          
+          docker tag ${{ secrets.registry.service.name }}:${{ tag_to_check }}-RC ${{ secrets.registry.service.name }}:${{ tag_to_check }}
   # job3:
   #   needs: job2
   #   runs-on: ubuntu-latest
