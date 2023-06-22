@@ -1,4 +1,4 @@
-name: Verificar Tag
+name: on-demand
 
 on:
   workflow_dispatch:
@@ -20,26 +20,26 @@ jobs:
         if: ${{ github.event.inputs.tag == '' }}
         run: |
           latest_tag=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[0].name')
-          echo "::set-output name=tag::$latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Verificar Tag
         id: verificar-tag
         run: |
           tag_to_check=${{ github.event.inputs.tag }}
           if [[ -z "$tag_to_check" ]]; then
-            tag_to_check=${{ steps.obtener-ultimo-tag.outputs.tag }}
+            tag_to_check=$LATEST_TAG
           fi
 
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
           if [[ "$response" == "200" ]]; then
-            echo "::set-output name=tag_exists::true"
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=tag_exists::false"
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
       - name: Imprimir Resultado
         run: |
-          if [[ "${{ steps.verificar-tag.outputs.tag_exists }}" == "true" ]]; then
+          if [[ "${{ env.TAG_EXISTS }}" == "true" ]]; then
             echo "El tag ${{ github.event.inputs.tag }} existe en el repositorio ${{ github.event.inputs.repositorio }}"
           else
             echo "El tag ${{ github.event.inputs.tag }} NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
