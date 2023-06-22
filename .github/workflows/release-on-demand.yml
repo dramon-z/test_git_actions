@@ -26,11 +26,13 @@ jobs:
         run: |
           
           latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[].name' | sort -V | tail -n1)
-          
+          echo "$latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Verificar Tag
         id: verificar-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag_to_check=${{ github.event.inputs.tag }}
           if [[ -z "$tag_to_check" ]]; then
