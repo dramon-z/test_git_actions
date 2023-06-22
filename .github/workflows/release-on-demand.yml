@@ -20,18 +20,18 @@ jobs:
       - name: Leer archivo YAML
         id: leer-yaml
         run: |
-          echo "::set-output name=yaml::$(cat repositorios.yml)"
+          echo "${{ steps.leer-yaml.outputs.yaml }}" > env-vars.env
       - name: Extraer riesgo del repositorio
         id: extraer-riesgo
         run: |
           repository=${{ github.event.inputs.repositorio }}
-          yaml=$(echo "${{ steps.leer-yaml.outputs.yaml }}")
+          yaml=$(echo "$(<env-vars.env)")
           risk=$(echo "$yaml" | yq eval ".[] | select(.name == \"$repository\") | .risk" -)
-          echo "::set-output name=risk::$risk"      
+          echo "RISK=$risk" >> $GITHUB_ENV     
       
       - name: Mostrar riesgo del repositorio
         run: |
-          risk=${{ steps.extraer-riesgo.outputs.risk }}
+          risk=$RISK
           echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
 
   # job1:
