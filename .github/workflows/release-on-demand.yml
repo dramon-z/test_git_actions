@@ -16,10 +16,11 @@ jobs:
 
     steps:
     - name: Obtener último tag
-        if: ${{ github.event.inputs.tag == '' }}
+      id: obtener-ultimo-tag
+      if: ${{ github.event.inputs.tag == '' }}
         run: |
-          latest_tag=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[0].name')
-          echo "::set-output name=tag::$latest_tag"
+        latest_tag=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[0].name')
+        echo "::set-output name=tag::$latest_tag"
 
     - name: Verificar Tag
         run: |
