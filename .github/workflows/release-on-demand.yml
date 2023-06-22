@@ -44,8 +44,11 @@ jobs:
           echo "$response"
           
           if [[ "$response" == "200" ]]; then
+            TAG_EXISTS=true
             echo "TAG_EXISTS=true" >> $GITHUB_ENV
+
           else
+            TAG_EXISTS=false
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
