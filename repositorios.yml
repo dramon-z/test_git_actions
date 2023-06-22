@@ -1,3 +1,7 @@
 repositorios:
-  - name: rcc-ficoscore-pld-client-python
+  - name: APIHub-CdC/rcc-ficoscore-pld-client-python
     url: https://github.com/APIHub-CdC/rcc-ficoscore-pld-client-python
+    version: 1.0.0
+    version-rc: 1.2.0
+    # Scheduled 🟢| Controlled 🟡| Delayed🔴  (Change Management || Release Manager)
+    risk: Scheduled
