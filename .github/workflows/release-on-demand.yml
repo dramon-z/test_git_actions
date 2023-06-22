@@ -13,9 +13,9 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
-    # outputs:
-    #   TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
-    #   TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
+    outputs:
+      TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+      TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
     steps:
       - name: Configurar autenticación
         uses: actions/checkout@v2
@@ -72,7 +72,7 @@ jobs:
         # env:
         #   TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
         #   TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
-        # if: needs.job1.outputs.TAG_EXISTS == 'true'
+        if: needs.job1.outputs.TAG_EXISTS == 'true'
         run: |
           tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
           tag_exists=${{ needs.job1.outputs.TAG_EXISTS }}    
