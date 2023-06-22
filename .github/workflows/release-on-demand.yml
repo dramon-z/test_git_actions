@@ -69,9 +69,9 @@ jobs:
     steps:
       - name: Docker Tag
         id: docker-tag
-        env:
-          TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
-          TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
+        # env:
+        #   TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+        #   TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
         # if: needs.job1.outputs.TAG_EXISTS == 'true'
         run: |
           tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
