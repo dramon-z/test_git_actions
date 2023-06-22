@@ -24,17 +24,17 @@ jobs:
         run: |
           repository=${{ github.event.inputs.repositorio }}          
           yaml=$(<repositorios.yml)          
-          risk=$(echo "$yaml" | yq eval ".[] | select(.name == \"$repository\") | .risk" -)
+          risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
           echo "RISK=$risk" >> $GITHUB_ENV  
 
-      - name: Extraer riesgo del repositorio
-        id: extraer-riesgo
-        run: |
-          repository=${{ github.event.inputs.repositorio }}
-          yaml=$(echo "$REPOSITORIOS")
-          echo "$yaml"
-          risk=$(echo "$yaml" | yq eval ".[] | select(.name == \"$repository\") | .risk" -)
-          echo "RISK=$risk" >> $GITHUB_ENV     
+      # - name: Extraer riesgo del repositorio
+      #   id: extraer-riesgo
+      #   run: |
+      #     repository=${{ github.event.inputs.repositorio }}
+      #     yaml=$(echo "$REPOSITORIOS")
+      #     echo "$yaml"
+      #     risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
+      #     echo "RISK=$risk" >> $GITHUB_ENV     
       
       - name: Mostrar riesgo del repositorio
         run: |
