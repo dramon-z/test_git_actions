@@ -22,17 +22,10 @@ jobs:
       - name: Leer archivo YAML
         id: leer-yaml
         run: |
-
-          repository=${{ github.event.inputs.repositorio }}
-          echo "$repository"
-          yaml=$(<repositorios.yml)
-          echo "$yaml"
-
-
-
-          echo "$yaml" | jq -r '.[] | select(.name == $repository) | .risk' > risk.txt
-          risk=$(<risk.txt)
-          echo "RISK=$risk" >> $GITHUB_ENV
+          repository=${{ github.event.inputs.repositorio }}          
+          yaml=$(<repositorios.yml)          
+          risk=$(echo "$yaml" | yq eval ".[] | select(.name == \"$repository\") | .risk" -)
+          echo "RISK=$risk" >> $GITHUB_ENV  
 
       - name: Extraer riesgo del repositorio
         id: extraer-riesgo
