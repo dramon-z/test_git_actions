@@ -49,7 +49,9 @@ jobs:
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ env.TAG_EXISTS }}" == "true" ]]; then
+          echo "TAG $TAG_EXISTS"
+
+          if [[ "$TAG_EXISTS" == "true" ]]; then
             echo "El tag $tag_to_check existe en el repositorio ${{ github.event.inputs.repositorio }}"
           else
             echo "El tag $tag_to_check NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
