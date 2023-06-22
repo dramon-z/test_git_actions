@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Docker Tag
         id: docker-tag
-        if: needs.job1.outputs.TAG_EXISTS == 'true'
+        # if: needs.job1.outputs.TAG_EXISTS == 'true'
         run: |
           tag=${{ needs.job1.outputs.TAG_TO_CHECK }}
       
