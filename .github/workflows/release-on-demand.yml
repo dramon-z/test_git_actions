@@ -42,18 +42,18 @@ jobs:
           fi
           echo "TAG: $tag_to_check"
 
-          echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_ENV
+          echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
 
           response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
           echo "$response"
           
           if [[ "$response" == "200" ]]; then
             TAG_EXISTS=true
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
 
           else
             TAG_EXISTS=false
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
           fi
 
           echo "TAG $TAG_EXISTS"
@@ -69,11 +69,14 @@ jobs:
     steps:
       - name: Docker Tag
         id: docker-tag
+        env:
+          TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+          TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
         # if: needs.job1.outputs.TAG_EXISTS == 'true'
         run: |
-          tag=${{ needs.job1.outputs.TAG_TO_CHECK }}
-      
+          tag=${{ needs.job1.outputs.TAG_TO_CHECK }}      
           echo "TAG: $tag"
+          echo "TAG_TO_CHECK: $TAG_TO_CHECK"
           echo "service: ${{ secrets.registry.service.name }}"
           
           docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
