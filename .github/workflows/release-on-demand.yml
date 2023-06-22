@@ -13,6 +13,8 @@ on:
 jobs:
   job0:
     runs-on: ubuntu-latest
+    # outputs:
+    #   REPOSITORIOS: ${{ steps.leer-yaml.outputs.REPOSITORIOS }}
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v2
@@ -20,12 +22,14 @@ jobs:
       - name: Leer archivo YAML
         id: leer-yaml
         run: |
-          echo "${{ steps.leer-yaml.outputs.yaml }}" > env-vars.env
+          echo "REPOSITORIOS=$(cat repositorios.yml)" >> $GITHUB_ENV
+
       - name: Extraer riesgo del repositorio
         id: extraer-riesgo
         run: |
           repository=${{ github.event.inputs.repositorio }}
-          yaml=$(echo "$(<env-vars.env)")
+          yaml=$(echo "$REPOSITORIOS")
+          echo "$yaml"
           risk=$(echo "$yaml" | yq eval ".[] | select(.name == \"$repository\") | .risk" -)
           echo "RISK=$risk" >> $GITHUB_ENV     
       
