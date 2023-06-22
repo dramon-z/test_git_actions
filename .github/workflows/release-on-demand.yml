@@ -23,6 +23,7 @@ jobs:
         echo "::set-output name=tag::$latest_tag"
 
     - name: Verificar Tag
+        id: verificar-tag
         run: |
           tag_to_check=${{ github.event.inputs.tag }}
           if [[ -z "$tag_to_check" ]]; then
