@@ -19,7 +19,9 @@ jobs:
         id: obtener-ultimo-tag
         if: ${{ github.event.inputs.tag == '' }}
         run: |
-          latest_tag=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[0].name')
+          
+          latest_tag=$(curl -s "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[].name' | sort -V | tail -n1)
+          
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
       - name: Verificar Tag
