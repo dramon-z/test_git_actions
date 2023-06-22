@@ -11,7 +11,7 @@ on:
         required: true
 
 jobs:
-  verificar-tag:
+  job1:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +38,7 @@ jobs:
           if [[ -z "$tag_to_check" ]]; then
             tag_to_check=$LATEST_TAG
           fi
+          echo "TAG: $tag_to_check"
 
           response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
           if [[ "$response" == "200" ]]; then
@@ -51,4 +52,23 @@ jobs:
           else
             echo "El tag ${{ github.event.inputs.tag }} NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
           fi
+  # job2:
+  #   needs: job1
+  #   runs-on: ubuntu-latest
 
+  #   steps:
+  #     - name: Docker Tag
+  #       id: docker-tag
+  #       if: needs.verificar-tag.outputs.TAG_EXISTS == 'true'
+  #       run: |
+  #         docker tag ${{ secrets.registry.service.name }}:${{ inputs.versionPROD }}-RC ${{ secrets.registry.service.name }}:${{ inputs.versionPROD }}
+  # job3:
+  #   needs: job2
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Docker Push
+  #       id: docker-push
+  #       if: needs.docker-tag.outputs.return-value == '0'
+  #       run: |
+  #         docker push ${{ secrets.registry.service.name }}:${{ inputs.versionPROD }}
