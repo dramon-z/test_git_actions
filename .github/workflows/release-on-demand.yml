@@ -5,7 +5,7 @@ on:
     inputs:
       tag:
         description: 'Nombre del tag'
-        required: true
+        required: false
       repositorio:
         description: 'Nombre del repositorio (en formato "usuario/repositorio")'
         required: true
@@ -30,7 +30,20 @@ jobs:
       - name: Mostrar riesgo del repositorio
         run: |
           risk=$RISK
-          echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
+          echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"    
+          
+          
+
+
+          
+      #     yaml=$(<repositorios.yml)          
+      #     risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
+      #     echo "RISK=$risk" >> $GITHUB_ENV  
+      
+      # - name: Mostrar riesgo del repositorio
+      #   run: |
+      #     risk=$RISK
+      #     echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
 
   job1:
     runs-on: ubuntu-latest
@@ -47,7 +60,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          
+          latest_tag_ok=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags")
+          echo "$latest_tag_ok"
           latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[].name' | sort -V | tail -n1)
           echo "$latest_tag"
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
@@ -64,6 +78,10 @@ jobs:
           echo "TAG: $tag_to_check"
 
           echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
+
+          response_OK=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
+          echo "$response_OK"
+
 
           response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
           echo "$response"

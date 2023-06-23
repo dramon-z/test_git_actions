@@ -1,0 +1,9 @@
+{
+    "service_name": "mobile-remittance-service",
+    "repo_url_ssh": "git@github.com:fintechdigitalventure/spin-remittance.git",
+    "repo_https": "https://github.com/fintechdigitalventure/spin-remittance.git",
+    "business_unit": "spin",
+    "pod": {
+        "name": "pod_acuario"
+    }
+}
