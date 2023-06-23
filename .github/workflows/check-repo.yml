@@ -37,7 +37,7 @@ jobs:
 
           # Extraer el usuario
           usuario=${string#*@}  # Eliminar todo antes del símbolo '@'
-          usuario=${usuario#*:}  # Eliminar todo antes del símbolo ':'
+          usuario=${usuario%%/*}  # Eliminar todo después del primer símbolo '/'
           
           # Extraer el repositorio
           repositorio=${string#*/}  # Eliminar todo antes del primer símbolo '/'
