@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Nombre del tag (opcional)'
-        required: false
+        description: 'Nombre del tag'
+        required: true
       repositorio:
         description: 'Nombre del repositorio (en formato "usuario/repositorio")'
         required: true
@@ -16,8 +16,8 @@ jobs:
     # outputs:
     #   REPOSITORIOS: ${{ steps.leer-yaml.outputs.REPOSITORIOS }}
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v2
+      # - name: Checkout del repositorio
+      #   uses: actions/checkout@v2
       
       - name: Leer archivo YAML
         id: leer-yaml
@@ -38,8 +38,8 @@ jobs:
       TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
       TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
     steps:
-      - name: Configurar autenticación
-        uses: actions/checkout@v2
+      # - name: Configurar autenticación
+      #   uses: actions/checkout@v2
 
       - name: Obtener último tag
         id: obtener-ultimo-tag
