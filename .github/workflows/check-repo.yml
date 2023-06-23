@@ -69,7 +69,7 @@ jobs:
           usuario= ${{needs.job0.outputs.USUARIO}}
           echo "USUARIO=$usuario"
           echo "REPOSITORIO=$repositorio"
-          
+
           latest_tag_ok=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags")
           echo "$latest_tag_ok"
           latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags" | jq -r '.[].name' | sort -V | tail -n1)
@@ -89,8 +89,10 @@ jobs:
 
           echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
 
-          repositorio= ${{needs.job0.outputs.REPOSITORIO}}
-          usuario= ${{needs.job0.outputs.USUARIO}}
+          repositorio=${{needs.job0.outputs.REPOSITORIO}}
+          usuario=${{needs.job0.outputs.USUARIO}}
+          echo "USUARIO=$usuario"
+          echo "REPOSITORIO=$repositorio"
 
           response_OK=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
           echo "$response_OK"
