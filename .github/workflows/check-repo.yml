@@ -13,28 +13,31 @@ on:
 jobs:
   job0:
     runs-on: ubuntu-latest
-    # outputs:
-    #   REPOSITORIOS: ${{ steps.leer-yaml.outputs.REPOSITORIOS }}
+    outputs:
+      USUARIO: ${{ steps.extrac-user-repo.outputs.USUARIO }}
+      REPOSITORIO: ${{ steps.extrac-user-repo.outputs.REPOSITORIO }}
+      RISK: ${{ steps.extrac-risk.outputs.RISK }}
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v3
       
-      - name: Leer archivo YAML
-        id: leer-yaml
+      - name: Extraer el riesgo
+        id: extrac-risk
         run: |
-          servicename=${{ github.event.inputs.servicename }}   
-          
-          content=$(cat repositorios/${servicename}.json)
-          echo "$content"       
+          servicename=${{ github.event.inputs.servicename }}             
+          content=$(cat repositorios/${servicename}.json)        
           risk=$(echo $content | jq -r '.risk')
           repo_https=$(echo $content | jq -r '.repo_https')
           echo "El riesgo es: $risk"
-          echo "El repo https: $repo_https "
-
-
+          echo "RISK=$risk" >> $GITHUB_OUTPUT  
+                
+      - name: Extraer repositorio y usuario
+        id: extrac-user-repo
+        run: |
+          servicename=${{ github.event.inputs.servicename }}             
+          content=$(cat repositorios/${servicename}.json)          
           repo_url_ssh=$(echo $content | jq -r '.repo_url_ssh')
           string="$repo_url_ssh"
-
           # Extraer el usuario
           usuario=${string#*@}  # Eliminar todo antes del símbolo '@'
           usuario=${usuario%%/*}  # Eliminar todo después del primer símbolo '/'
@@ -43,27 +46,67 @@ jobs:
           # Extraer el repositorio
           repositorio=${string#*/}  # Eliminar todo antes del primer símbolo '/'
           repositorio=${repositorio%.git}  # Eliminar la extensión '.git'
-          
-          echo "Usuario: $usuario"
-          echo "Repositorio: $repositorio"
-
-
-          echo "RISK=$risk" >> $GITHUB_ENV  
-      
-      - name: Mostrar riesgo del repositorio
+          echo "USUARIO=$usuario" >> $GITHUB_OUTPUT  
+          echo "REPOSITORIO=$repositorio" >> $GITHUB_OUTPUT  
+  job1:
+    needs: job0
+    runs-on: ubuntu-latest
+    outputs:
+      TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+      TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
+    steps:
+      - name: Obtener último tag
+        id: obtener-ultimo-tag
+        if: ${{ github.event.inputs.tag == '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          risk=$RISK
-          echo "El riesgo del repositorio ${{ github.event.inputs.servicename }} es: $risk"    
+          repositorio= ${{needs.job0.outputs.REPOSITORIO}}
+          usuario= ${{needs.job0.outputs.USUARIO}}
           
-          
+          latest_tag_ok=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags")
+          echo "$latest_tag_ok"
+          latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags" | jq -r '.[].name' | sort -V | tail -n1)
+          echo "$latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Verificar Tag
+        id: verificar-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag_to_check=${{ github.event.inputs.tag }}
+          if [[ -z "$tag_to_check" ]]; then
+            tag_to_check=$LATEST_TAG
+          fi
+          echo "TAG: $tag_to_check"
+
+          echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
+
+          repositorio= ${{needs.job0.outputs.REPOSITORIO}}
+          usuario= ${{needs.job0.outputs.USUARIO}}
+
+          response_OK=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
+          echo "$response_OK"
 
 
+          response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
+          echo "$response"
           
-      #     yaml=$(<repositorios.yml)          
-      #     risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
-      #     echo "RISK=$risk" >> $GITHUB_ENV  
-      
-      # - name: Mostrar riesgo del repositorio
-      #   run: |
-      #     risk=$RISK
-      #     echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
+          if [[ "$response" == "200" ]]; then
+            TAG_EXISTS=true
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+
+          else
+            TAG_EXISTS=false
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "TAG $TAG_EXISTS"
+
+          if [[ "$TAG_EXISTS" == "true" ]]; then
+            echo "El tag $tag_to_check existe en el repositorio $servicename"
+          else
+            echo "El tag $tag_to_check NO existe en el repositorio $servicename"
+          fi
+  
