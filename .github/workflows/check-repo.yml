@@ -31,6 +31,22 @@ jobs:
           echo "El riesgo es: $risk"
           echo "El repo https: $repo_https "
 
+
+          repo_url_ssh=$(echo $content | jq -r '.repo_url_ssh')
+          string="$repo_url_ssh"
+
+          # Extraer el usuario
+          usuario=${string#*@}  # Eliminar todo antes del símbolo '@'
+          usuario=${usuario%%/*}  # Eliminar todo después del símbolo '/'
+          
+          # Extraer el repositorio
+          repositorio=${string#*/}  # Eliminar todo antes del primer símbolo '/'
+          repositorio=${repositorio%.git}  # Eliminar la extensión '.git'
+          
+          echo "Usuario: $usuario"
+          echo "Repositorio: $repositorio"
+
+
           echo "RISK=$risk" >> $GITHUB_ENV  
       
       - name: Mostrar riesgo del repositorio
