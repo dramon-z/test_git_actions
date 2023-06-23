@@ -22,9 +22,11 @@ jobs:
       - name: Leer archivo YAML
         id: leer-yaml
         run: |
+          servicename=${{ github.event.inputs.servicename }}   
+          
           content=$(cat repositorios/${servicename}.json)
-          echo "$content"
-          servicename=${{ github.event.inputs.servicename }}          
+          echo "$content"       
+          
           yaml=$(<repositorios/${servicename}.json)          
           echo "yaml"
 
