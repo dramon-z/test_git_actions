@@ -1,0 +1,50 @@
+name: check-repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Nombre del tag'
+        required: false
+      servicename:
+          description: 'Nombre del servicio'
+          required: true
+
+jobs:
+  job0:
+    runs-on: ubuntu-latest
+    # outputs:
+    #   REPOSITORIOS: ${{ steps.leer-yaml.outputs.REPOSITORIOS }}
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+      
+      - name: Leer archivo YAML
+        id: leer-yaml
+        run: |
+          content=$(cat repositorios/${servicename}.json)
+          echo "$content"
+          servicename=${{ github.event.inputs.servicename }}          
+          yaml=$(<repositorios/${servicename}.json)          
+          echo "yaml"
+
+          risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
+          echo "RISK=$risk" >> $GITHUB_ENV  
+      
+      - name: Mostrar riesgo del repositorio
+        run: |
+          risk=$RISK
+          echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"    
+          
+          
+
+
+          
+      #     yaml=$(<repositorios.yml)          
+      #     risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
+      #     echo "RISK=$risk" >> $GITHUB_ENV  
+      
+      # - name: Mostrar riesgo del repositorio
+      #   run: |
+      #     risk=$RISK
+      #     echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
