@@ -26,96 +26,87 @@ jobs:
           yaml=$(<repositorios.yml)          
           risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
           echo "RISK=$risk" >> $GITHUB_ENV  
-
-      # - name: Extraer riesgo del repositorio
-      #   id: extraer-riesgo
-      #   run: |
-      #     repository=${{ github.event.inputs.repositorio }}
-      #     yaml=$(echo "$REPOSITORIOS")
-      #     echo "$yaml"
-      #     risk=$(echo "$yaml" | yq eval ".repositorios[] | select(.name == \"$repository\") | .risk" -)
-      #     echo "RISK=$risk" >> $GITHUB_ENV     
       
       - name: Mostrar riesgo del repositorio
         run: |
           risk=$RISK
           echo "El riesgo del repositorio ${{ github.event.inputs.repository }} es: $risk"
 
-  # job1:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
-  #     TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
-  #   steps:
-  #     - name: Configurar autenticación
-  #       uses: actions/checkout@v2
+  job1:
+    runs-on: ubuntu-latest
+    outputs:
+      TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
+      TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
+    steps:
+      - name: Configurar autenticación
+        uses: actions/checkout@v2
 
-  #     - name: Obtener último tag
-  #       id: obtener-ultimo-tag
-  #       if: ${{ github.event.inputs.tag == '' }}
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: |
+      - name: Obtener último tag
+        id: obtener-ultimo-tag
+        if: ${{ github.event.inputs.tag == '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           
-  #         latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[].name' | sort -V | tail -n1)
-  #         echo "$latest_tag"
-  #         echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latest_tag=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/tags" | jq -r '.[].name' | sort -V | tail -n1)
+          echo "$latest_tag"
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
 
-  #     - name: Verificar Tag
-  #       id: verificar-tag
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: |
-  #         tag_to_check=${{ github.event.inputs.tag }}
-  #         if [[ -z "$tag_to_check" ]]; then
-  #           tag_to_check=$LATEST_TAG
-  #         fi
-  #         echo "TAG: $tag_to_check"
+      - name: Verificar Tag
+        id: verificar-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag_to_check=${{ github.event.inputs.tag }}
+          if [[ -z "$tag_to_check" ]]; then
+            tag_to_check=$LATEST_TAG
+          fi
+          echo "TAG: $tag_to_check"
 
-  #         echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
+          echo "TAG_TO_CHECK=$tag_to_check" >> $GITHUB_OUTPUT
 
-  #         response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
-  #         echo "$response"
+          response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.event.inputs.repositorio }}/git/refs/tags/$tag_to_check")
+          echo "$response"
           
-  #         if [[ "$response" == "200" ]]; then
-  #           TAG_EXISTS=true
-  #           echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          if [[ "$response" == "200" ]]; then
+            TAG_EXISTS=true
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
 
-  #         else
-  #           TAG_EXISTS=false
-  #           echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
-  #         fi
+          else
+            TAG_EXISTS=false
+            echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
 
-  #         echo "TAG $TAG_EXISTS"
+          echo "TAG $TAG_EXISTS"
 
-  #         if [[ "$TAG_EXISTS" == "true" ]]; then
-  #           echo "El tag $tag_to_check existe en el repositorio ${{ github.event.inputs.repositorio }}"
-  #         else
-  #           echo "El tag $tag_to_check NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
-  #         fi
-  # job2:
-  #   needs: job1
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Docker Tag
-  #       id: docker-tag
-  #       if: needs.job1.outputs.TAG_EXISTS == 'true'
-  #       run: |
-  #         tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
-  #         tag_exists=${{ needs.job1.outputs.TAG_EXISTS }}    
-  #         echo "TAG: $tag"
-  #         echo "tag_exists: $tag_exists"
-  #         echo "service: ${{ secrets.registry.service.name }}"
+          if [[ "$TAG_EXISTS" == "true" ]]; then
+            echo "El tag $tag_to_check existe en el repositorio ${{ github.event.inputs.repositorio }}"
+          else
+            echo "El tag $tag_to_check NO existe en el repositorio ${{ github.event.inputs.repositorio }}"
+          fi
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker Tag
+        id: docker-tag
+        if: needs.job1.outputs.TAG_EXISTS == 'true'
+        run: |
+          tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
+          tag_exists=${{ needs.job1.outputs.TAG_EXISTS }}    
+          echo "TAG: $tag"
+          echo "tag_exists: $tag_exists"
+          echo "service: ${{ secrets.registry.service.name }}"
           
-  #         docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
-  # job3:
-  #   needs: job2
-  #   runs-on: ubuntu-latest
+          docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
+  job3:
+    needs: job2
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Docker Push
-  #       id: docker-push
-  #       if: needs.job1.outputs.TAG_EXISTS == 'true'
-  #       run: |
-  #         docker push ${{ secrets.registry.service.name }}:${{needs.job1.outputs.TAG_TO_CHECK }}
+    steps:
+      - name: Docker Push
+        id: docker-push
+        if: needs.job1.outputs.TAG_EXISTS == 'true'
+        run: |
+          docker push ${{ secrets.registry.service.name }}:${{needs.job1.outputs.TAG_TO_CHECK }}
 
