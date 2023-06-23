@@ -17,7 +17,7 @@ jobs:
     #   REPOSITORIOS: ${{ steps.leer-yaml.outputs.REPOSITORIOS }}
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Leer archivo YAML
         id: leer-yaml
