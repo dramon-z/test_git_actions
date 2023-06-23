@@ -26,7 +26,10 @@ jobs:
           
           content=$(cat repositorios/${servicename}.json)
           echo "$content"       
-          
+          risk=$(echo $content | jq -r '.risk')
+          echo "El riesgo es: $risk"
+
+
           yaml=$(<repositorios/${servicename}.json)          
           echo "yaml"
 
