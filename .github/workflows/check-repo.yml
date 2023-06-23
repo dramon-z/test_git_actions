@@ -46,6 +46,10 @@ jobs:
           # Extraer el repositorio
           repositorio=${string#*/}  # Eliminar todo antes del primer símbolo '/'
           repositorio=${repositorio%.git}  # Eliminar la extensión '.git'
+
+          echo "USUARIO=$usuario"
+          echo "REPOSITORIO=$repositorio"
+
           echo "USUARIO=$usuario" >> $GITHUB_OUTPUT  
           echo "REPOSITORIO=$repositorio" >> $GITHUB_OUTPUT  
   job1:
@@ -63,6 +67,8 @@ jobs:
         run: |
           repositorio= ${{needs.job0.outputs.REPOSITORIO}}
           usuario= ${{needs.job0.outputs.USUARIO}}
+          echo "USUARIO=$usuario"
+          echo "REPOSITORIO=$repositorio"
           
           latest_tag_ok=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags")
           echo "$latest_tag_ok"
