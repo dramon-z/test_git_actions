@@ -1,0 +1,10 @@
+{
+    "service_name": "rcc-ficoscore-pld",
+    "repo_url_ssh": "git@github.com:APIHub-CdC/rcc-ficoscore-pld-client-python.git",
+    "repo_https": "https://github.com/APIHub-CdC/rcc-ficoscore-pld-client-python.git",
+    "business_unit": "spin",
+    "risk": "Scheduled",
+    "pod": {
+        "name": "pod_acuario"
+    }
+}
