@@ -5,14 +5,14 @@ on:
     inputs:
       tag:
         description: 'Nombre del tag'
-        required: false
+        required: true
       servicename:
           description: 'Nombre del servicio'
           required: true
 
 jobs:
   job0:
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "genesys-runner"]
     outputs:
       USUARIO: ${{ steps.extrac-user-repo.outputs.USUARIO }}
       REPOSITORIO: ${{ steps.extrac-user-repo.outputs.REPOSITORIO }}
@@ -54,11 +54,14 @@ jobs:
           echo "REPOSITORIO=$repositorio" >> $GITHUB_OUTPUT  
   job1:
     needs: job0
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "genesys-runner"]
     outputs:
       TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
       TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
+
     steps:
+      - name: Configurar autenticación
+        uses: actions/checkout@v2
       - name: Obtener último tag
         id: obtener-ultimo-tag
         if: ${{ github.event.inputs.tag == '' }}
@@ -69,6 +72,7 @@ jobs:
           usuario= ${{needs.job0.outputs.USUARIO}}
           echo "USUARIO=$usuario"
           echo "REPOSITORIO=$repositorio"
+
 
           latest_tag_ok=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/tags")
           echo "$latest_tag_ok"
@@ -94,9 +98,20 @@ jobs:
           echo "USUARIO=$usuario"
           echo "REPOSITORIO=$repositorio"
 
-          response_OK=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
+
+          echo "TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+          echo "usuario: $usuario"
+          echo "repositorio: $repositorio"
+          echo "El propietario del token es ${{ env.GITHUB_ACTOR }}"
+          
+          response_OK=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/user")
           echo "$response_OK"
 
+          response_OK=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
+          echo "$response_OK"
+
+          latest_tag_ok=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$usuario/$repositorio/tags")
+          echo "$latest_tag_ok"
 
           response=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/$usuario/$repositorio/git/refs/tags/$tag_to_check")
           echo "$response"
@@ -117,4 +132,27 @@ jobs:
           else
             echo "El tag $tag_to_check NO existe en el repositorio $servicename"
           fi
-  
+  job2:
+    needs: job1
+    runs-on: ["self-hosted", "genesys-runner"]
+    steps:
+      - name: Docker Tag
+        id: docker-tag
+        if: needs.job1.outputs.TAG_EXISTS == 'true'
+        run: |
+            tag=${{ needs.job1.outputs.TAG_TO_CHECK }}     
+            tag_exists=${{ needs.job1.outputs.TAG_EXISTS }}    
+            echo "TAG: $tag"
+            echo "tag_exists: $tag_exists"
+            echo "service: ${{ secrets.registry.service.name }}"
+            
+            docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
+  job3:
+    needs: job2
+    runs-on: ["self-hosted", "genesys-runner"]
+    steps:
+      - name: Docker Push
+        id: docker-push
+        if: needs.job1.outputs.TAG_EXISTS == 'true'
+        run: |
+            docker push ${{ secrets.registry.service.name }}:${{needs.job1.outputs.TAG_TO_CHECK }}
