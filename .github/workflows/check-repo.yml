@@ -12,7 +12,7 @@ on:
 
 jobs:
   job0:
-    runs-on: ["self-hosted", "genesys-runner"]
+    runs-on: ubuntu-latest
     outputs:
       USUARIO: ${{ steps.extrac-user-repo.outputs.USUARIO }}
       REPOSITORIO: ${{ steps.extrac-user-repo.outputs.REPOSITORIO }}
@@ -54,7 +54,7 @@ jobs:
           echo "REPOSITORIO=$repositorio" >> $GITHUB_OUTPUT  
   job1:
     needs: job0
-    runs-on: ["self-hosted", "genesys-runner"]
+    runs-on: ubuntu-latest
     outputs:
       TAG_TO_CHECK: ${{ steps.verificar-tag.outputs.TAG_TO_CHECK }}
       TAG_EXISTS: ${{ steps.verificar-tag.outputs.TAG_EXISTS }}
@@ -134,7 +134,7 @@ jobs:
           fi
   job2:
     needs: job1
-    runs-on: ["self-hosted", "genesys-runner"]
+    runs-on: ubuntu-latest
     steps:
       - name: Docker Tag
         id: docker-tag
@@ -149,7 +149,7 @@ jobs:
             docker tag ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}-RC ${{ secrets.registry.service.name }}:${{  needs.job1.outputs.TAG_TO_CHECK }}
   job3:
     needs: job2
-    runs-on: ["self-hosted", "genesys-runner"]
+    runs-on: ubuntu-latest
     steps:
       - name: Docker Push
         id: docker-push
