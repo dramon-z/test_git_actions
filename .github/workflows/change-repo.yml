@@ -15,34 +15,18 @@ jobs:
                 ref: master
                 token: ${{secrets.GLOBAL_REPO_TOKEN}}
 
-          - name: Copiar contenido a carpeta temporal
+          - name: Crear repositorio B
             run: |
-                ls
-                mkdir temp
-                cp -R .* temp/
-                echo "#### temp"
-                cd temp
-                ls
+                git config --global user.name "GitHub Actions"
+                git config --global user.email "actions@github.com"
+                git clone https://github.com/dramon-z/test_git_actions.git # Clonar el repositorio B
 
-          - name: Checkout repositorio test_git_actions
-            uses: actions/checkout@v2
-            with:
-                repository: dramon-z/test_git_actions
-                ref: master
-                token: ${{secrets.GLOBAL_REPO_TOKEN}}
-
-          - name: Copiar contenido de carpeta temporal a repositorio test_git_actions
+          - name: Copiar archivos
             run: |
+                cd test_git_actions # Entrar al repositorio B
                 ls
-                cd ..
-                echo "INT --------"
-                ls
-                
-                cp -R ./temp/* .
-                rm -rf temp/
-
-          - name: Commit y push cambios
-            run: |
-                git add .
-                git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
-                git push
+                # git checkout master # Cambiar a la rama de destino en el repositorio B
+                # cp -R ../2023.05.29.demo/* . # Copiar los archivos de la rama de origen al repositorio B
+                # git add .
+                # git commit -m "Copiar archivos de la rama source-branch del repositorio A"
+                # git push origin main # Empujar los cambios a la rama de destino en el repositorio B    
