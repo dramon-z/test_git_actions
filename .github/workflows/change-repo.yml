@@ -4,39 +4,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  copy-branch:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repositorio A
-        uses: actions/checkout@v2
-        with:
-          repository: dramon-z/test_git_actions
-          ref: master
-          token: ${{ secrets.GLOBAL_REPO_TOKEN }}
-
-      - name: Checkout repositorio B
-        uses: actions/checkout@v2
-        with:
-          repository: dramon-z/2023.05.29.demo
-          ref: master
-          token: ${{ secrets.GLOBAL_REPO_TOKEN }}
-
-      - name: Copiar contenido
-        run: |
-          git remote show origin
-          echo "####"
-          git remote set-url origin https://github.com/dramon-z/test_git_actions
-          echo "####"
-          git remote show origin
-          echo "####"
-          echo "####"
-          git pull
-          git status
-          #   git add .
-          #   git commit -m "change"
-          #   git push
-          #   git push test_git_actions HEAD:master
-          
-          echo "####"
-          ls
+    copy-content:
+        runs-on: ubuntu-latest
+    
+        steps:
+          - name: Checkout repositorio 2023.05.29.demo
+            uses: actions/checkout@v2
+            with:
+              repository: dramon-z/2023.05.29.demo
+              ref: master
+    
+          - name: Checkout repositorio test_git_actions
+            uses: actions/checkout@v2
+            with:
+              repository: dramon-z/test_git_actions
+              ref: master
+    
+          - name: Copiar contenido
+            run: |
+              cp -R . dramon-z/test_git_actions/
+              cd dramon-z/test_git_actions
+              git add .
+              git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
+              git push
