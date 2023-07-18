@@ -21,9 +21,13 @@ jobs:
                 git config --global user.email "actions@github.com"
                 ls
                 echo "##CLONE REPO"
+                cd ..
                 git clone https://github.com/dramon-z/test_git_actions.git # Clonar el repositorio B
                 ls
-                
+                cd test_git_actions
+                git checkout master # Cambiar a la rama de destino en el repositorio B
+
+
 
           - name: Copiar archivos
             run: |
