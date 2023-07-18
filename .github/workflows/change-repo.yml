@@ -11,26 +11,29 @@ jobs:
           - name: Checkout repositorio 2023.05.29.demo
             uses: actions/checkout@v2
             with:
-              repository: dramon-z/2023.05.29.demo
-              ref: master
-              token: ${{secrets.GLOBAL_REPO_TOKEN}}
-    
+                repository: dramon-z/2023.05.29.demo
+                ref: master
+                token: ${{secrets.GLOBAL_REPO_TOKEN}}
+
+          - name: Copiar contenido a carpeta temporal
+            run: |
+                mkdir temp
+                cp -R ./* temp/
+
           - name: Checkout repositorio test_git_actions
             uses: actions/checkout@v2
             with:
-              repository: dramon-z/test_git_actions
-              ref: master
-              token: ${{secrets.GLOBAL_REPO_TOKEN}}
-    
-          - name: Copiar contenido
+                repository: dramon-z/test_git_actions
+                ref: master
+                token: ${{secrets.GLOBAL_REPO_TOKEN}}
+
+          - name: Copiar contenido de carpeta temporal a repositorio test_git_actions
             run: |
-              ls
-              echo "####"
-              cd ..
-              ls
-              echo "####"
-              #   cp -R . test_git_actions/
-              #   cd test_git_actions
-              #   git add .
-              #   git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
-              #   git push
+                cp -R ./temp/* .
+                rm -rf temp/
+
+          - name: Commit y push cambios
+            run: |
+                git add .
+                git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
+                git push
