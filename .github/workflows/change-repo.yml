@@ -24,6 +24,9 @@ jobs:
     
           - name: Copiar contenido
             run: |
+              ls
+              cd ..
+              ls
               cp -R . dramon-z/test_git_actions/
               cd dramon-z/test_git_actions
               git add .
