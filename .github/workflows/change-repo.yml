@@ -20,16 +20,17 @@ jobs:
                 git config --global user.name "GitHub Actions"
                 git config --global user.email "actions@github.com"
                 ls
+                mkdir ../temp
+                cp -R ./* ../temp
                 echo "##CLONE REPO"                
                 cd ..
                 rm -R test_git_actions
                 ls                
                 git clone https://github.com/dramon-z/test_git_actions.git # Clonar el repositorio B
-                git clone https://github.com/dramon-z/2023.05.29.demo.git 
                 ls
                 cd test_git_actions
                 git checkout master # Cambiar a la rama de destino en el repositorio B
-                cp -R ../2023.05.29.demo/* .
+                cp -R ../temp/* .
                 git add .
                 git commit -m "Copiar archivos de la rama source-branch del repositorio A"
                 git push origin master # Empujar los cambios a la rama de destino en el repositorio B  
