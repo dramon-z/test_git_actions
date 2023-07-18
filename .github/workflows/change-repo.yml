@@ -25,10 +25,12 @@ jobs:
           - name: Copiar contenido
             run: |
               ls
+              echo "####"
               cd ..
               ls
-              cp -R . dramon-z/test_git_actions/
-              cd dramon-z/test_git_actions
-              git add .
-              git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
-              git push
+              echo "####"
+              #   cp -R . test_git_actions/
+              #   cd test_git_actions
+              #   git add .
+              #   git commit -m "Copiar contenido de rama master de dramon-z/2023.05.29.demo"
+              #   git push
