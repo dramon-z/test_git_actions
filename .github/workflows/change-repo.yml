@@ -19,7 +19,7 @@ jobs:
             run: |
                 ls
                 mkdir temp
-                cp -R ./* temp/
+                cp -R .* temp/
                 echo "#### temp"
                 cd temp
                 ls
