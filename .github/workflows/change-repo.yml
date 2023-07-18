@@ -25,19 +25,17 @@ jobs:
       - name: Copiar contenido
         run: |
           git remote show origin
-          ls
           echo "####"
           git remote set-url origin https://github.com/dramon-z/test_git_actions
           echo "####"
           git remote show origin
           echo "####"
-          ls
           echo "####"
           #   git status
           #   git add .
           #   git commit -m "change"
           #   git push
-          git push dramon-z/test_git_actions HEAD:master
+          git push test_git_actions HEAD:master
           
           echo "####"
           ls
