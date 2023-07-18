@@ -27,10 +27,18 @@ jobs:
           git remote show origin
           ls
           echo "####"
-          git remote add dramon-z/test_git_actions dramon-z/test_git_actions
+          git remote set-url origin https://github.com/dramon-z/test_git_actions
+          echo "####"
           git remote show origin
+          echo "####"
           ls
           echo "####"
           git status
-          git push dramon-z/test_git_actions HEAD:master
+          git add .
+          git commit -m "change"
+          git push
+          #git push dramon-z/test_git_actions HEAD:master
+          
+          echo "####"
+          git remote show origin
           ls
