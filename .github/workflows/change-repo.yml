@@ -17,8 +17,12 @@ jobs:
 
           - name: Copiar contenido a carpeta temporal
             run: |
+                ls
                 mkdir temp
                 cp -R ./* temp/
+                echo "#### temp"
+                cd temp
+                ls
 
           - name: Checkout repositorio test_git_actions
             uses: actions/checkout@v2
@@ -29,6 +33,11 @@ jobs:
 
           - name: Copiar contenido de carpeta temporal a repositorio test_git_actions
             run: |
+                ls
+                cd ..
+                echo "INT --------"
+                ls
+                
                 cp -R ./temp/* .
                 rm -rf temp/
 
