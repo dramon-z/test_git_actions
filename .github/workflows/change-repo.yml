@@ -27,7 +27,7 @@ jobs:
           git remote show origin
           ls
           echo "####"
-          git remote add dramon-z/test_git_actions .
+          git remote add dramon-z/test_git_actions dramon-z/test_git_actions
           git remote show origin
           ls
           echo "####"
