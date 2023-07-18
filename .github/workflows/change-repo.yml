@@ -25,18 +25,11 @@ jobs:
                 rm -R test_git_actions
                 ls                
                 git clone https://github.com/dramon-z/test_git_actions.git # Clonar el repositorio B
+                git clone https://github.com/dramon-z/2023.05.29.demo.git 
                 ls
                 cd test_git_actions
                 git checkout master # Cambiar a la rama de destino en el repositorio B
-
-
-
-          - name: Copiar archivos
-            run: |
-                cd test_git_actions # Entrar al repositorio B
-                ls
-                # git checkout master # Cambiar a la rama de destino en el repositorio B
-                # cp -R ../2023.05.29.demo/* . # Copiar los archivos de la rama de origen al repositorio B
-                # git add .
-                # git commit -m "Copiar archivos de la rama source-branch del repositorio A"
-                # git push origin main # Empujar los cambios a la rama de destino en el repositorio B    
+                cp -R ../2023.05.29.demo/* .
+                git add .
+                git commit -m "Copiar archivos de la rama source-branch del repositorio A"
+                git push origin master # Empujar los cambios a la rama de destino en el repositorio B  
