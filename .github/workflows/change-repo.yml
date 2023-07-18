@@ -33,12 +33,11 @@ jobs:
           echo "####"
           ls
           echo "####"
-          git status
-          git add .
-          git commit -m "change"
-          git push
-          #git push dramon-z/test_git_actions HEAD:master
+          #   git status
+          #   git add .
+          #   git commit -m "change"
+          #   git push
+          git push dramon-z/test_git_actions HEAD:master
           
           echo "####"
-          git remote show origin
           ls
