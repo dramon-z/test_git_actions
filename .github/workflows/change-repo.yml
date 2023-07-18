@@ -1,0 +1,27 @@
+name: Copiar rama del Repositorio A al Repositorio B
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositorio A
+        uses: actions/checkout@v2
+        with:
+          repository: dramon-z/2023.05.29.demo
+          ref: master
+
+      - name: Checkout repositorio B
+        uses: actions/checkout@v2
+        with:
+          repository: dramon-z/test_git_actions
+          ref: master
+
+      - name: Copiar contenido
+        run: |
+          cd repo-A
+          git remote add test_git_actions ../test_git_actions
+          git push test_git_actions HEAD:main
