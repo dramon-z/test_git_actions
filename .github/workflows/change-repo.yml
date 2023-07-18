@@ -31,11 +31,12 @@ jobs:
           git remote show origin
           echo "####"
           echo "####"
-          #   git status
+          git pull
+          git status
           #   git add .
           #   git commit -m "change"
           #   git push
-          git push test_git_actions HEAD:master
+          #   git push test_git_actions HEAD:master
           
           echo "####"
           ls
