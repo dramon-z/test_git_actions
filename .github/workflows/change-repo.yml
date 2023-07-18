@@ -25,7 +25,7 @@ jobs:
       - name: Copiar contenido
         run: |
           ls
-          git remote add test_git_actions ../test_git_actions
+          git remote add test_git_actions .
           ls
           git push test_git_actions HEAD:master
           ls
