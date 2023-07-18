@@ -13,12 +13,14 @@ jobs:
         with:
           repository: dramon-z/2023.05.29.demo
           ref: master
+          token: ${{ secrets.GLOBAL_REPO_TOKEN }}
 
       - name: Checkout repositorio B
         uses: actions/checkout@v2
         with:
           repository: dramon-z/test_git_actions
           ref: master
+          token: ${{ secrets.GLOBAL_REPO_TOKEN }}
 
       - name: Copiar contenido
         run: |
