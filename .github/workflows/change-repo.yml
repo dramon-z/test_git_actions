@@ -29,5 +29,6 @@ jobs:
           git remote add dramon-z/test_git_actions .
           ls
           echo "####"
-          git push test_git_actions HEAD:master
+          git status
+          git push dramon-z/test_git_actions HEAD:master
           ls
