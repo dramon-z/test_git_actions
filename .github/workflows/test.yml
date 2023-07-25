@@ -19,7 +19,7 @@ jobs:
         run: |           
           response=$(curl --location 'https://api.github.com/repos/dramon-z/refactor_repo/dispatches' \
             --header 'Accept: application/vnd.github.v3+json' \
-            --header 'Authorization: Bearer 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' \
+            --header 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
             --header 'Content-Type: application/json' \
             --data '{
                 "event_type": "refactor_repository",
