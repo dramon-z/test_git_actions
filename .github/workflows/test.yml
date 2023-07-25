@@ -17,20 +17,21 @@ jobs:
 #             client-payload: '{"servicename": "1","version": "2","repo_env": "3","repo_appid": "4","repo_host": "5",    "business_unit": "6","podname": "7"}'
       - name: mod repository
         run: |           
-          response=$(curl -X POST https://api.github.com/repos/dramon-z/refactor_repo/dispatches \
-            -H 'Accept: application/vnd.github.everest-preview+json' \
-            -H 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
+          response=$(curl --location 'https://api.github.com/repos/dramon-z/refactor_repo/dispatches' \
+            --header 'Accept: application/vnd.github.v3+json' \
+            --header 'Authorization: Bearer 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' \
+            --header 'Content-Type: application/json' \
             --data '{
-              "event_type": "template-gradle",
-              "client_payload": {
-                "servicename": "1",
-                "version": "1.0.0",
-                "repo_env": "dev",
-                "repo_appid": "UUID",
-                "repo_host": "localhost",
-                "business_unit": "spin",
-                "podname": "PODNAME"
-              }
+                "event_type": "refactor_repository",
+                "client_payload": {
+                    "servicename": "test",
+                    "version": "1.0.0",
+                    "repo_env": "dev",
+                    "repo_appid": "UUID",
+                    "repo_host": "localhost",
+                    "business_unit": "spin",
+                    "podname": "AQUILA"
+                }
             }' \
             -w "\nHTTP Status Code: %{http_code}\n\n%{response_code}\n")
           echo "$response"
