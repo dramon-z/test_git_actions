@@ -4,18 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-#   job0:
-#     name: Create repository for code
-#     uses: dramon-z/refactor_repo/.github/workflows/refactor_repository.yaml@master
-#     with:
-#         servicename: 'Test1'
-#         version: '1.0.0'
-#         repo_env: 'dev'
-#         repo_appid: 'uuid'
-#         repo_host: 'localhost'
-#         business_unit: 'spin'
-#         podname: 'AQUILA'
-#     secrets: inherit
+
   job1:
     runs-on: ubuntu-latest
     steps: 
@@ -28,20 +17,20 @@ jobs:
 #             client-payload: '{"servicename": "1","version": "2","repo_env": "3","repo_appid": "4","repo_host": "5",    "business_unit": "6","podname": "7"}'
       - name: mod repository
         run: |           
-          response=$(curl --location 'https://api.github.com/repos/dramon-z/refactor_repo/dispatches' \
-          --header 'Accept: application/vnd.github.v3+json' \
-          --header 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
-          --header 'Content-Type: text/plain' \
-          --data '{
-              "event_type": "refactor_repository",
+          response=$(curl -X POST https://api.github.com/repos/dramon-z/refactor_repo/dispatches \
+            -H 'Accept: application/vnd.github.everest-preview+json' \
+            -H 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
+            --data '{
+              "event_type": "template-gradle",
               "client_payload": {
-                  "servicename": "test",
-                  "version": "1.0.0",
-                  "repo_env": "dev",
-                  "repo_appid": "UUID",
-                  "repo_host": "localhost",
-                  "business_unit": "spin",
-                  "podname": "AQUILA"
+                "servicename": "1",
+                "version": "1.0.0",
+                "repo_env": "dev",
+                "repo_appid": "UUID",
+                "repo_host": "localhost",
+                "business_unit": "spin",
+                "podname": "PODNAME"
               }
-          }' # Muestra errores en la salida estándar
+            }' \
+            -w "\nHTTP Status Code: %{http_code}\n\n%{response_code}\n")
           echo "$response"
