@@ -1,0 +1,18 @@
+name: test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  job0:
+    name: Create repository for code
+    uses: dramon-z/refactor_repo/.github/workflows/refactor_repository.yml@master
+    with:
+        servicename: 'Test1'
+        version: '1.0.0'
+        repo_env: 'dev'
+        repo_appid: 'uuid'
+        repo_host: 'localhost'
+        business_unit: 'spin'
+        podname: 'AQUILA'
+    secrets: inherit
