@@ -6,7 +6,7 @@ on:
 jobs:
   job0:
     name: Create repository for code
-    uses: dramon-z/refactor_repo/.github/workflows/refactor_repository.yml@master
+    uses: dramon-z/refactor_repo/.github/workflows/refactor_repository@master
     with:
         servicename: 'Test1'
         version: '1.0.0'
