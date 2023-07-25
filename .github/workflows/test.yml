@@ -4,15 +4,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  job0:
-    name: Create repository for code
-    uses: dramon-z/refactor_repo/.github/workflows/refactor_repository.yaml@master
-    with:
-        servicename: 'Test1'
-        version: '1.0.0'
-        repo_env: 'dev'
-        repo_appid: 'uuid'
-        repo_host: 'localhost'
-        business_unit: 'spin'
-        podname: 'AQUILA'
-    secrets: inherit
+#   job0:
+#     name: Create repository for code
+#     uses: dramon-z/refactor_repo/.github/workflows/refactor_repository.yaml@master
+#     with:
+#         servicename: 'Test1'
+#         version: '1.0.0'
+#         repo_env: 'dev'
+#         repo_appid: 'uuid'
+#         repo_host: 'localhost'
+#         business_unit: 'spin'
+#         podname: 'AQUILA'
+#     secrets: inherit
+  job1:
+    runs-on: [self-hosted, genesys-runner]
+    steps:      
+      - name: mod repository
+        run: |      
+          curl -X POST https://api.github.com/repos/dramon-z/refactor_repo/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          --header 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
+          --data '{
+            "event_type": "template-gradle",
+            "client_payload": {
+                "servicename": "1",
+                "version": "1.0.0",
+                "repo_env": "dev",
+                "repo_appid": "UUID",
+                "repo_host": "localhost",
+                "business_unit": "spin",
+                "podname": "PODNAME"
+            }
+          }'
