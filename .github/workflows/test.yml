@@ -25,16 +25,7 @@ jobs:
           response=$(curl -X POST https://api.github.com/repos/dramon-z/refactor_repo/dispatches \
             -H 'Accept: application/vnd.github.everest-preview+json' \
             --header 'Authorization: Bearer ${{ secrets.GLOBAL_REPO_TOKEN }}' \
-            --data '{
-              "event_type": "template-gradle",
-              "client_payload": {
-                "servicename": "1",
-                "version": "1.0.0",
-                "repo_env": "dev",
-                "repo_appid": "UUID",
-                "repo_host": "localhost",
-                "business_unit": "spin",
-                "podname": "PODNAME"
-              }
-            }')
+            --write-out "HTTP Status Code: %{http_code}\n\n%{response_code}" \ # Captura el código de estado y el cuerpo de respuesta
+            --silent \ # Suprime la salida estándar
+            --show-error) # Muestra errores en la salida estándar
           echo "$response"
